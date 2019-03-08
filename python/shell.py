@@ -2,6 +2,7 @@
 """
 import os
 import shellutils.stat
+import shellutils.chdir
 
 def ss_launch(args):
     """Launches external, non-builtin process"""
@@ -27,15 +28,14 @@ def ss_execute(args):
     """Executes user-submitted commands with argument support."""
     if len(args) == 0:
         return False
-
     command = args[0]
-    # parse input
-    # ...
     shellutils.stat.record_command(command)
 
     if command == "exit":
         shellutils.stat.cleanup()
         return True
+    elif command == "cd":
+        shellutils.chdir.execute(args)
     elif command == "stat":
         for record in shellutils.stat.execute():
             print(record, end="")
@@ -46,7 +46,7 @@ def ss_execute(args):
 def ss_loop():
     """Runs the main shell loop."""
     while True:
-        print("> ", end="")
+        print("{}> ".format(os.path.abspath(os.path.curdir)), end="")
         # Tokenize input
         line = input()
         args = line.split()
