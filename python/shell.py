@@ -1,30 +1,13 @@
 import time
+import os
+import shellutils.stat
 
-# Responsible for storing history of shell commands
-history = []
-
-def recordCommand(command):
-    """Records each shell command along with the system time.
-
-    Args:
-        command -- The command entered by the user
-    """
-    fullstring = ""
-    fullstring += time.strftime("%H:%M", time.localtime())
-    fullstring += " " + command
-    history.append(fullstring)
-
-def stat():
-    """Built-in command that displays a user's command history.
-
-    Displays the history of commands received from the user along with the
-    system time when it was input by the user.
-
-    Returns:
-        A list that stores a user's command history. Each element is string
-        specifying the command entered and the system time at that time.
-    """
-    return history
+# def child():
+#     print("\nA new child ", os.getpid())
+#     while True:
+#         print("Learn to attach to me: child.")
+#         time.sleep(2)
+#     # os._exit(0)
 
 def execute(args):
     """Executes user-submitted commands with argument support."""
@@ -33,17 +16,27 @@ def execute(args):
 
     command = args[0]
     # parse input
-    # ...
-    # always call stat
-    recordCommand(command)
+    # ... 
+    shellutils.stat.record_command(command)
 
     if command == "stat":
-        thishistory = stat()
-        for com in thishistory:
-            print(com)
-    if command == "exit":
+        for record in shellutils.stat.execute():
+            print(record, end="")
+    elif command == "exit":
+        shellutils.stat.cleanup()
         return True
-
+    elif command == "fork":
+        # newpid = os.fork()
+        # if newpid == 0:
+        #     child()
+        # else:
+        #     while True:
+        #         print("Learn to attach to me: parent")
+        #         time.sleep(2)
+        #     print("newpid ", newpid)
+        #     pids = (os.getpid(), newpid)
+        #     print("parent: %d, child: %d\n" % pids)
+        print("to be implemented")   
     return False
 
 def loop():
@@ -56,6 +49,6 @@ def loop():
         status = execute(args)
         # Check if user wants to exit shell
         if status:
-            break;
+            break
 
 loop()
